@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import userRoutes from './routes/userRoutes.js';
+import kpiRoutes from './routes/kpiRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import { sequelize } from './config/database.js';
 import { logger } from './utils/logger.js';
@@ -24,6 +25,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/kpi', kpiRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
 // Health check endpoint
@@ -47,6 +49,13 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     logger.info('Database connection established successfully.');
+    
+    // Synchroniser les modèles avec la base de données
+    // En production, utilisez des migrations au lieu de sync
+    if (process.env.NODE_ENV === 'development') {
+      await sequelize.sync();
+      logger.info('Database models synchronized.');
+    }
     
     app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);

@@ -1,25 +1,20 @@
-# Utilisation de Python comme image de base
-FROM python:3.11-slim
+# Utilisation de Node.js comme image de base
+FROM node:18-alpine
 
 # Définition du répertoire de travail
 WORKDIR /app
 
-# Installation des dépendances système nécessaires
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+# Copier les fichiers de dépendances
+COPY package*.json ./
 
-# Copie des fichiers de dépendances
-COPY requirements.txt .
+# Installer les dépendances
+RUN npm install
 
-# Installation des dépendances Python
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copie du reste des fichiers du projet
+# Copier le reste du code source
 COPY . .
 
-# Exposition du port 8000
+# Exposer le port 8000
 EXPOSE 8000
 
-# Démarrage de l'application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Démarrer l'application
+CMD ["npm", "run", "dev"]
