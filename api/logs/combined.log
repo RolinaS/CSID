@@ -40,3 +40,6 @@
 {"level":"info","message":"Database connection established successfully.","service":"csid-api","timestamp":"2025-03-11 15:26:52"}
 {"level":"info","message":"Database models synchronized.","service":"csid-api","timestamp":"2025-03-11 15:26:52"}
 {"level":"info","message":"Server is running on port 8000","service":"csid-api","timestamp":"2025-03-11 15:26:53"}
+{"level":"info","message":"Database connection established successfully.","service":"csid-api","timestamp":"2025-03-11 15:57:05"}
+{"level":"info","message":"Database models synchronized.","service":"csid-api","timestamp":"2025-03-11 15:57:05"}
+{"level":"info","message":"Server is running on port 8000","service":"csid-api","timestamp":"2025-03-11 15:57:05"}
