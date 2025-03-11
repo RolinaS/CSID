@@ -45,14 +45,17 @@ CREATE TABLE Commande (
 
 -- Table de Faits : Vente
 CREATE TABLE Vente (
-    id_vente SERIAL PRIMARY KEY,
-    id_commande INT REFERENCES Commande(id_commande) ON DELETE CASCADE,
-    id_client INT REFERENCES Client(id_client) ON DELETE CASCADE,
-    id_vendeur INT REFERENCES Vendeur(id_vendeur) ON DELETE CASCADE,
-    montant DECIMAL(10,2) NOT NULL,
-    produit VARCHAR(255) NOT NULL,
-    quantite INT NOT NULL CHECK (quantite > 0),
-    date_vente DATE NOT NULL
+    code_vente VARCHAR(20) NOT NULL,       -- Identifiant unique de la vente
+    poste INT NOT NULL,                    -- Poste de vente
+    code_article VARCHAR(50) NOT NULL,     -- Code de l'article vendu
+    article_saisi VARCHAR(50) NOT NULL,    -- Référence saisie de l'article
+    type_poste VARCHAR(10) NOT NULL,       -- Type de poste (ex: ZTXO)
+    code_facturation VARCHAR(10),          -- Code de facturation
+    devise VARCHAR(5) DEFAULT 'EUR',       -- Devise utilisée pour la vente
+    valeur_nette DECIMAL(15,2) DEFAULT 0,  -- Valeur nette de la vente
+    date_modification DATE NOT NULL,       -- Date de la dernière modification
+    centre_profit VARCHAR(10),             -- Centre de profit associé
+    PRIMARY KEY (code_vente, poste)        -- Clé primaire composite
 );
 
 -- Table de Faits : Total des ventes par vendeur (par an)
