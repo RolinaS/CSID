@@ -10,17 +10,28 @@ CREATE TABLE Pays (
 
 -- Table Dimension : Vendeur (Commercial)
 CREATE TABLE Vendeur (
-    id_vendeur SERIAL PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    id_pays INT REFERENCES Pays(id_pays)
+    id_vendeur SERIAL PRIMARY KEY,         -- Identifiant unique auto-incrémenté
+    groupe_vendeur INT NOT NULL,           -- Groupe du vendeur
+    langue VARCHAR(5) DEFAULT 'FR',        -- Langue préférée du vendeur
+    nom VARCHAR(100) NOT NULL,             -- Nom du vendeur
+    objectif DECIMAL(15,2) DEFAULT 0,      -- Objectif de vente du vendeur
+    matricule INT NOT NULL DEFAULT 0,      -- Matricule du vendeur
+    email VARCHAR(255) DEFAULT 'non fourni' -- Email du vendeur
 );
+
 
 -- Table Dimension : Client
 CREATE TABLE Client (
-    id_client SERIAL PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    id_pays INT REFERENCES Pays(id_pays),
-    groupe_client VARCHAR(100) NOT NULL CHECK (groupe_client IN ('Particulier', 'Entreprise', 'Grand compte'))
+    id_client SERIAL PRIMARY KEY,             -- Identifiant unique auto-incrémenté
+    code_client VARCHAR(20) UNIQUE NOT NULL,  -- Code client issu du système source
+    nom VARCHAR(100) NOT NULL,                -- Nom du client
+    id_pays VARCHAR(10) REFERENCES Pays(id_pays),  -- Pays du client (clé étrangère vers Pays)
+    groupe_client VARCHAR(50) NOT NULL CHECK (groupe_client IN ('Particulier', 'Entreprise', 'Grand compte')),
+    code_postal VARCHAR(10),                   -- Code postal du client
+    localite VARCHAR(100),                     -- Localité géographique du client
+    code_branche VARCHAR(10),                  -- Code de branche (activité du client)
+    devise VARCHAR(5) DEFAULT 'EUR',           -- Devise utilisée par le client (par défaut EUR)
+    actif BOOLEAN DEFAULT TRUE                 -- Indique si le client est actif ou non
 );
 
 -- Table Dimension : Commande

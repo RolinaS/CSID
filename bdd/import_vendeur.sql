@@ -1,0 +1,12 @@
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (1, 'FR', 'JEFF', -1500000.0, 350, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (2, 'FR', 'NONO', 3000000.0, 370, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (3, 'FR', 'PHIPHI', 2000000.0, 113, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (4, 'FR', 'TOTO', 0.0, 321, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (5, 'FR', 'GIGI', 3000000.0, 30, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (6, 'FR', 'SPAN', 0.0, 0, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (7, 'FR', 'DIV', 0.0, 0, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (8, 'FR', 'MICKA', 0.0, 0, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (9, 'FR', 'YANIS', 2000000.0, 374, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (10, 'FR', 'BENJ', 3000000.0, 373, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (11, 'FR', 'PAULO', 2500000.0, 375, 'non fourni');
+INSERT INTO Vendeur (groupe_vendeur, langue, nom, objectif, matricule, email) VALUES (12, 'FR', 'ORLI', 1500000.0, 391, 'non fourni');
