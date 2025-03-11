@@ -36,14 +36,17 @@ CREATE TABLE Client (
 
 -- Table Dimension : Commande
 CREATE TABLE Commande (
-    id_commande SERIAL PRIMARY KEY,
-    id_client INT REFERENCES Client(id_client),
-    id_vendeur INT REFERENCES Vendeur(id_vendeur),
-    montant DECIMAL(10,2) NOT NULL,
-    date_commande DATE NOT NULL
+    id_commande SERIAL PRIMARY KEY,  -- Clé primaire auto-incrémentée
+    code_commande VARCHAR(20) UNIQUE NOT NULL,  -- Numéro de commande unique
+    ordre_client VARCHAR(20),  -- Référence de l'ordre client
+    montant DECIMAL(10,2) NOT NULL,  -- Valeur nette de la commande
+    devise VARCHAR(5) DEFAULT 'EUR',  -- Devise utilisée pour la commande
+    date_document DATE NOT NULL,  -- Date du document de commande
+    date_commande DATE NOT NULL,  -- Date effective de la commande
+    motif_commande TEXT  -- Motif de la commande (optionnel)
 );
 
--- Table de Faits : Vente
+-- Table de Dimension : Vente
 CREATE TABLE Vente (
     code_vente VARCHAR(20) NOT NULL,       -- Identifiant unique de la vente
     poste INT NOT NULL,                    -- Poste de vente
