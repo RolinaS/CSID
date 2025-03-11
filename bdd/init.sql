@@ -19,7 +19,6 @@ CREATE TABLE Vendeur (
     email VARCHAR(255) DEFAULT 'non fourni' -- Email du vendeur
 );
 
-
 -- Table Dimension : Client
 CREATE TABLE Client (
     id_client SERIAL PRIMARY KEY,             -- Identifiant unique auto-incrémenté
@@ -46,7 +45,8 @@ CREATE TABLE Commande (
     motif_commande TEXT  -- Motif de la commande (optionnel)
 );
 
--- Table de Dimension : Vente
+
+-- Table de Faits : Vente
 CREATE TABLE Vente (
     code_vente VARCHAR(20) NOT NULL,       -- Identifiant unique de la vente
     poste INT NOT NULL,                    -- Poste de vente
