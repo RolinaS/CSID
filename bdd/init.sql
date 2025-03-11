@@ -32,36 +32,48 @@ CREATE TABLE Commande (
     date_commande DATE NOT NULL
 );
 
--- Table de Faits : Nombre total de commandes par commerciale (par an)
-CREATE TABLE FaitsCommandesCommerciale (
+-- Table de Faits : Vente
+CREATE TABLE Vente (
+    id_vente SERIAL PRIMARY KEY,
+    id_commande INT REFERENCES Commande(id_commande) ON DELETE CASCADE,
+    id_client INT REFERENCES Client(id_client) ON DELETE CASCADE,
+    id_vendeur INT REFERENCES Vendeur(id_vendeur) ON DELETE CASCADE,
+    montant DECIMAL(10,2) NOT NULL,
+    produit VARCHAR(255) NOT NULL,
+    quantite INT NOT NULL CHECK (quantite > 0),
+    date_vente DATE NOT NULL
+);
+
+-- Table de Faits : Total des ventes par vendeur (par an)
+CREATE TABLE FaitsVentesCommerciale (
     id_fait SERIAL PRIMARY KEY,
     id_vendeur INT REFERENCES Vendeur(id_vendeur),
     annee INT NOT NULL,
-    total_commandes INT NOT NULL
+    total_ventes DECIMAL(15,2) NOT NULL
 );
 
--- Table de Faits : Nombre total de commandes passées sur une période donnée
-CREATE TABLE FaitsNombreCommandes (
+-- Table de Faits : Nombre total de ventes sur une période donnée
+CREATE TABLE FaitsNombreVentes (
     id_fait SERIAL PRIMARY KEY,
     periode DATE NOT NULL,
-    total_commandes INT NOT NULL
+    total_ventes INT NOT NULL
 );
 
--- Table de Faits : Répartition des clients par pays
-CREATE TABLE FaitsClientsParPays (
+-- Table de Faits : Répartition des ventes par pays
+CREATE TABLE FaitsVentesParPays (
     id_fait SERIAL PRIMARY KEY,
     id_pays INT REFERENCES Pays(id_pays),
-    total_clients INT NOT NULL
+    total_ventes DECIMAL(15,2) NOT NULL
 );
 
--- Table de Faits : Répartition des clients par groupe (Particulier, Entreprise, Grand compte)
-CREATE TABLE FaitsClientsParGroupe (
+-- Table de Faits : Répartition des ventes par groupe de clients
+CREATE TABLE FaitsVentesParGroupe (
     id_fait SERIAL PRIMARY KEY,
     groupe_client VARCHAR(100) NOT NULL CHECK (groupe_client IN ('Particulier', 'Entreprise', 'Grand compte')),
-    total_clients INT NOT NULL
+    total_ventes DECIMAL(15,2) NOT NULL
 );
 
--- Table de Faits : Nombre total de clients (taille de la base de données)
+-- Table de Faits : Nombre total de clients (base de données)
 CREATE TABLE FaitsTotalClients (
     id_fait SERIAL PRIMARY KEY,
     date_reference DATE NOT NULL,
@@ -78,10 +90,10 @@ CREATE TABLE FaitsCycleVieClients (
 );
 
 -- Index pour optimiser les performances des requêtes
-CREATE INDEX idx_vendeur_annee ON FaitsCommandesCommerciale(id_vendeur, annee);
-CREATE INDEX idx_periode ON FaitsNombreCommandes(periode);
-CREATE INDEX idx_pays ON FaitsClientsParPays(id_pays);
-CREATE INDEX idx_groupe_client ON FaitsClientsParGroupe(groupe_client);
+CREATE INDEX idx_vendeur_annee ON FaitsVentesCommerciale(id_vendeur, annee);
+CREATE INDEX idx_periode ON FaitsNombreVentes(periode);
+CREATE INDEX idx_pays ON FaitsVentesParPays(id_pays);
+CREATE INDEX idx_groupe_client ON FaitsVentesParGroupe(groupe_client);
 CREATE INDEX idx_client ON FaitsCycleVieClients(id_client);
 
 -- Création de quelques données fictives pour tester
@@ -101,3 +113,53 @@ INSERT INTO Commande (id_client, id_vendeur, montant, date_commande) VALUES
 (1, 1, 200.00, '2024-01-15'),
 (2, 2, 5000.00, '2024-02-20'),
 (3, 3, 12000.00, '2024-03-05');
+
+-- Insertion de ventes
+INSERT INTO Vente (id_commande, id_client, id_vendeur, montant, produit, quantite, date_vente) VALUES 
+(1, 1, 1, 200.00, 'Ordinateur portable', 1, '2024-01-15'),
+(2, 2, 2, 5000.00, 'Serveur HP', 2, '2024-02-20'),
+(3, 3, 3, 12000.00, 'Infrastructure Cloud', 1, '2024-03-05');
+
+-- Calcul des faits : Total des ventes par vendeur (exemple d'agrégation)
+INSERT INTO FaitsVentesCommerciale (id_vendeur, annee, total_ventes)
+SELECT id_vendeur, EXTRACT(YEAR FROM date_vente), SUM(montant)
+FROM Vente
+GROUP BY id_vendeur, EXTRACT(YEAR FROM date_vente);
+
+-- Calcul des faits : Nombre total de ventes par période (exemple d'agrégation)
+INSERT INTO FaitsNombreVentes (periode, total_ventes)
+SELECT date_vente, COUNT(*)
+FROM Vente
+GROUP BY date_vente;
+
+-- Calcul des faits : Répartition des ventes par pays
+INSERT INTO FaitsVentesParPays (id_pays, total_ventes)
+SELECT c.id_pays, SUM(v.montant)
+FROM Vente v
+JOIN Client c ON v.id_client = c.id_client
+GROUP BY c.id_pays;
+
+-- Calcul des faits : Répartition des ventes par groupe de clients
+INSERT INTO FaitsVentesParGroupe (groupe_client, total_ventes)
+SELECT c.groupe_client, SUM(v.montant)
+FROM Vente v
+JOIN Client c ON v.id_client = c.id_client
+GROUP BY c.groupe_client;
+
+-- Calcul des faits : Nombre total de clients
+INSERT INTO FaitsTotalClients (date_reference, total_clients)
+VALUES (CURRENT_DATE, (SELECT COUNT(*) FROM Client));
+
+-- Calcul des faits : Cycle de vie des clients
+INSERT INTO FaitsCycleVieClients (id_client, date_premiere_commande, date_derniere_commande)
+SELECT v.id_client, MIN(v.date_vente), MAX(v.date_vente)
+FROM Vente v
+GROUP BY v.id_client;
+
+-- Vérification des données insérées
+SELECT * FROM Vente;
+SELECT * FROM FaitsVentesCommerciale;
+SELECT * FROM FaitsVentesParPays;
+SELECT * FROM FaitsVentesParGroupe;
+SELECT * FROM FaitsTotalClients;
+SELECT * FROM FaitsCycleVieClients;
