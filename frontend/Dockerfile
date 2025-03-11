@@ -16,8 +16,8 @@ COPY . .
 # Construction de l'application
 RUN npm run build
 
-# Exposition du port 3000
-EXPOSE 3000
+# Exposition du port 5173 (port par défaut de Vite)
+EXPOSE 5173
 
 # Démarrage de l'application
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import userRoutes from './routes/userRoutes.js';
 import kpiRoutes from './routes/kpiRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import healthRoutes from './routes/healthRoutes.js';
 import { sequelize } from './config/database.js';
 import { logger } from './utils/logger.js';
 
@@ -27,11 +28,9 @@ app.use(morgan('dev'));
 app.use('/api/users', userRoutes);
 app.use('/api/kpi', kpiRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/health', healthRoutes);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date() });
-});
+// Health check endpoint est maintenant géré par healthRoutes
 
 // Error handling middleware
 app.use((err, req, res, next) => {

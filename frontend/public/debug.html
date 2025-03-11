@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSID Frontend Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSID Frontend Debug Page</h1>
+    
+    <div class="test-section">
+        <h2>1. Test API Connection</h2>
+        <button onclick="testApiConnection()">Test API Connection</button>
+        <div id="api-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test React Loading</h2>
+        <p>Vérifie si React est correctement chargé sur la page principale</p>
+        <button onclick="testReactLoading()">Test React Loading</button>
+        <div id="react-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Browser Console</h2>
+        <p>Vérifie les erreurs dans la console du navigateur</p>
+        <button onclick="testBrowserConsole()">Test Browser Console</button>
+        <div id="console-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Environnement</h2>
+        <button onclick="checkEnvironment()">Check Environment</button>
+        <div id="env-result"></div>
+    </div>
+
+    <script>
+        async function testApiConnection() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = '<p>Testing API connection...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                resultDiv.innerHTML = `
+                    <p class="success">API Connection Successful!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">API Connection Failed: ${error.message}</p>
+                    <p>Vérifiez que l'API est en cours d'exécution et accessible.</p>
+                `;
+                console.error('API Error:', error);
+            }
+        }
+
+        async function testReactLoading() {
+            const resultDiv = document.getElementById('react-result');
+            
+            try {
+                // Fetch the main page
+                const response = await fetch('/');
+                const html = await response.text();
+                
+                // Check if it contains React-related content
+                const hasReactRoot = html.includes('id="root"');
+                const hasReactScript = html.includes('src="/src/main.jsx"') || html.includes('main-');
+                
+                if (hasReactRoot && hasReactScript) {
+                    resultDiv.innerHTML = `
+                        <p class="success">React semble correctement configuré dans index.html</p>
+                        <p>La page contient un élément avec id="root" et le script React.</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">Problème avec la configuration React</p>
+                        <p>Élément root trouvé: ${hasReactRoot}</p>
+                        <p>Script React trouvé: ${hasReactScript}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">Erreur lors du test de React: ${error.message}</p>
+                `;
+                console.error('React Test Error:', error);
+            }
+        }
+
+        function testBrowserConsole() {
+            const resultDiv = document.getElementById('console-result');
+            
+            // Create a test error to check if console capture works
+            console.log('Test console log from debug page');
+            
+            // Get console errors (this is a simplified approach, won't catch all errors)
+            const consoleErrors = [];
+            const originalConsoleError = console.error;
+            
+            console.error = function() {
+                consoleErrors.push(Array.from(arguments).join(' '));
+                originalConsoleError.apply(console, arguments);
+            };
+            
+            // Simulate checking for errors
+            setTimeout(() => {
+                console.error = originalConsoleError;
+                
+                if (consoleErrors.length > 0) {
+                    resultDiv.innerHTML = `
+                        <p class="error">Erreurs détectées dans la console:</p>
+                        <pre>${consoleErrors.join('\n')}</pre>
+                        <p>Vérifiez la console du navigateur pour plus de détails.</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="success">Aucune erreur détectée dans la console pendant le test.</p>
+                        <p>Note: Ceci est un test limité. Vérifiez la console du navigateur pour une analyse complète.</p>
+                    `;
+                }
+            }, 500);
+        }
+
+        function checkEnvironment() {
+            const resultDiv = document.getElementById('env-result');
+            
+            const env = {
+                userAgent: navigator.userAgent,
+                windowSize: `${window.innerWidth}x${window.innerHeight}`,
+                url: window.location.href,
+                protocol: window.location.protocol,
+                host: window.location.host
+            };
+            
+            resultDiv.innerHTML = `
+                <pre>${JSON.stringify(env, null, 2)}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>

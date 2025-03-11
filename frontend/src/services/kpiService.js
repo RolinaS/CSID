@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+// Déterminer l'URL de l'API en fonction de l'environnement
+// En développement dans Docker, utiliser l'URL du conteneur pour les requêtes côté serveur
+// Pour les requêtes du navigateur, utiliser localhost
+const isRunningInBrowser = typeof window !== 'undefined';
+const API_URL = process.env.REACT_APP_API_URL || 
+  (isRunningInBrowser ? 'http://localhost:8000/api' : 'http://api:8000/api');
 
 // Configuration d'axios avec le token
 const axiosInstance = axios.create({
